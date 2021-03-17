@@ -848,8 +848,6 @@ define KernelPackage/nft-core
 	CONFIG_NETFILTER_ADVANCED=y \
 	CONFIG_NFT_COMPAT=n \
 	CONFIG_NFT_QUEUE=n \
-	CONFIG_NF_TABLES_ARP=n \
-	CONFIG_NF_TABLES_BRIDGE=n \
 	$(KCONFIG_NFT_CORE)
 endef
 
@@ -858,6 +856,32 @@ define KernelPackage/nft-core/description
 endef
 
 $(eval $(call KernelPackage,nft-core))
+
+
+define KernelPackage/nft-arp
+    SUBMENU:=$(NF_MENU)
+    TITLE:=Netfilter nf_tables ARP table support
+    DEPENDS:=+kmod-nft-core
+    FILES:=$(foreach mod,$(NFT_ARP-m),$(LINUX_DIR)/net/$(mod).ko)
+    AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_ARP-m)))
+    KCONFIG:=$(KCONFIG_NFT_ARP)
+endef
+
+$(eval $(call KernelPackage,nft-arp))
+
+
+define KernelPackage/nft-bridge
+    SUBMENU:=$(NF_MENU)
+    TITLE:=Netfilter nf_tables bridge table support
+    DEPENDS:=+kmod-nft-core
+    FILES:=$(foreach mod,$(NFT_BRIDGE-m),$(LINUX_DIR)/net/$(mod).ko)
+    AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_BRIDGE-m)))
+    KCONFIG:= \
+      CONFIG_NF_LOG_BRIDGE=n \
+      $(KCONFIG_NFT_BRIDGE)
+endef
+
+$(eval $(call KernelPackage,nft-bridge))
 
 
 define KernelPackage/nft-nat
@@ -882,3 +906,4 @@ define KernelPackage/nft-nat6
 endef
 
 $(eval $(call KernelPackage,nft-nat6))
+
