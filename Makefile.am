@@ -19,29 +19,25 @@ AUTOMAKE_OPTIONS =	foreign
 
 # These are built from source in the Docs directory
 EXTRA_DIST =		INSTALL-SOURCE INSTALL-WIN-SOURCE \
-			README COPYING EXCEPTIONS-CLIENT \
-                        CMakeLists.txt configure.cmake config.h.cmake BUILD-CMAKE
+			README COPYING EXCEPTIONS-CLIENT CMakeLists.txt
 
 SUBDIRS =		. include @docs_dirs@ @zlib_dir@ \
 			@readline_topdir@ sql-common scripts \
-			libservices \
+			@pstack_dir@ libservices \
 			@sql_union_dirs@ unittest \
 			@sql_server@ @man_dirs@ tests \
-			@libmysqld_dirs@ \
+			netware @libmysqld_dirs@ \
 			mysql-test support-files sql-bench \
-			win \
-			packaging \
-			cmake
+			win
+
 DIST_SUBDIRS =		. include Docs zlib \
 			cmd-line-utils sql-common scripts \
-			libservices \
+			pstack libservices \
 			strings mysys dbug extra regex libmysql libmysql_r client unittest storage plugin \
 			vio sql man tests \
-			libmysqld \
+			netware libmysqld \
 			mysql-test support-files sql-bench \
 			win \
-			cmake \
-			packaging \
 			BUILD
 DISTCLEANFILES = ac_available_languages_fragment
 
@@ -62,10 +58,8 @@ dist-hook:
 		--datadir=$(distdir)/win/data \
 		--srcdir=$(top_srcdir)
 	storage/myisam/myisamchk --silent --fast $(distdir)/win/data/mysql/*.MYI
-	test ! -f $(top_srcdir)/configure.am  || \
-	$(INSTALL_DATA)  $(top_srcdir)/configure.am $(distdir)
 
-all-local:		@ABI_CHECK@
+all-local:		@ABI_CHECK@	
 
 tags:
 	support-files/build-tags
@@ -135,14 +129,14 @@ smoke:
 test-full:	test test-nr test-ps
 
 test-force:
-	$(MAKE) -k force=--force test
+	$(MAKE) force=--force test
 
 test-force-full:
-	$(MAKE) -k force=--force test-full
+	$(MAKE) force=--force test-full
 
 #used by autopush.pl to run memory based tests
 test-force-mem:
-	$(MAKE) -k force=--force mem=--mem test
+	$(MAKE) force=--force mem=--mem test
 
 EXP = --experimental=collections/default.experimental
 
@@ -156,8 +150,8 @@ test-bt:
 	-if [ -e bin/ndbd -o -e storage/ndb/src/kernel/ndbd ] ; then \
 	  cd mysql-test ; \
 	    MTR_BUILD_THREAD=auto \
-	      @PERL@ ./mysql-test-run.pl --comment=ndb+ps --force --timer \
-	          --ps-protocol --mysqld=--binlog-format=row --suite=ndb $(EXP) ; \
+	      @PERL@ ./mysql-test-run.pl --comment=ndb+rpl_ndb+ps --force --timer \
+	          --ps-protocol --mysqld=--binlog-format=row --suite=ndb,rpl_ndb $(EXP) ; \
 	    MTR_BUILD_THREAD=auto \
 	      @PERL@ ./mysql-test-run.pl --comment=ndb --force --timer \
 	          --with-ndbcluster-only $(EXP) ; \
@@ -205,10 +199,18 @@ test-bt-fast:
 	-cd mysql-test ; MTR_BUILD_THREAD=auto \
 	    @PERL@ ./mysql-test-run.pl --force --comment=stress --suite=stress $(EXP)
 
+test-bt-fast:
+	-cd mysql-test ; MTR_BUILD_THREAD=auto \
+	    @PERL@ ./mysql-test-run.pl --force --comment=ps --ps-protocol --report-features
+
 test-bt-debug:
 	-cd mysql-test ; MTR_BUILD_THREAD=auto \
 	    @PERL@ ./mysql-test-run.pl --comment=debug  --force --timer \
 	        --skip-ndbcluster --skip-rpl --report-features $(EXP)
+
+test-bt-debug-fast:
+
+test-bt-debug-fast:
 
 # Keep these for a while
 test-pl:	test
@@ -262,15 +264,16 @@ test-full-qa:
 
 #
 # Headers which need to be checked for abi/api compatibility.
+# API_PREPROCESSOR_HEADER will be used until mysql_priv.h stablizes
+# after which TEST_PREPROCESSOR_HEADER will be used.
 #
 
-API_PREPROCESSOR_HEADER = $(top_srcdir)/include/mysql/plugin_audit.h \
-			$(top_srcdir)/include/mysql/plugin_ftparser.h \
-			$(top_srcdir)/include/mysql.h \
-			$(top_srcdir)/include/mysql/psi/psi_abi_v1.h \
-			$(top_srcdir)/include/mysql/psi/psi_abi_v2.h \
-                        $(top_srcdir)/include/mysql/client_plugin.h \
-                        $(top_srcdir)/include/mysql/plugin_auth.h
+API_PREPROCESSOR_HEADER = $(top_srcdir)/include/mysql/plugin.h \
+                           $(top_srcdir)/include/mysql.h
+
+TEST_PREPROCESSOR_HEADER = $(top_srcdir)/include/mysql/plugin.h \
+                            $(top_srcdir)/sql/mysql_priv.h \
+                            $(top_srcdir)/include/mysql.h
 
 #
 # Rules for checking that the abi/api has not changed.
@@ -312,12 +315,13 @@ API_PREPROCESSOR_HEADER = $(top_srcdir)/include/mysql/plugin_audit.h \
 abi_check:	$(API_PREPROCESSOR_HEADER)
 	$(MAKE) abi_headers="$^" do_abi_check
 
-abi_check_all:	abi_check 
+abi_check_all:	$(TEST_PREPROCESSOR_HEADER)
+	$(MAKE) abi_headers="$^" do_abi_check
 
 do_abi_check:
 	set -ex; \
 	for file in $(abi_headers); do \
-	         @CC@ -E -nostdinc -dI -DMYSQL_ABI_CHECK \
+	         @CC@ -E -nostdinc -dI \
 	                  -I$(top_srcdir)/include \
 	                  -I$(top_srcdir)/include/mysql \
 	                  -I$(top_srcdir)/sql \
@@ -333,3 +337,6 @@ do_abi_check:
 	                  @DIFF@ -w $$file.pp $(top_builddir)/abi_check.out; \
 	                  @RM@ $(top_builddir)/abi_check.out; \
 	done
+
+# Don't update the files from bitkeeper
+%::SCCS/s.%
