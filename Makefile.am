@@ -312,7 +312,8 @@ API_PREPROCESSOR_HEADER = $(top_srcdir)/include/mysql/plugin_audit.h \
 abi_check:	$(API_PREPROCESSOR_HEADER)
 	$(MAKE) abi_headers="$^" do_abi_check
 
-abi_check_all:	abi_check 
+abi_check_all:	$(TEST_PREPROCESSOR_HEADER)
+	$(MAKE) abi_headers="$^" do_abi_check
 
 do_abi_check:
 	set -ex; \
