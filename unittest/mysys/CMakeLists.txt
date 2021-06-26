@@ -18,6 +18,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include
                     ${CMAKE_SOURCE_DIR}/regex
                     ${CMAKE_SOURCE_DIR}/extra/yassl/include
                     ${CMAKE_SOURCE_DIR}/unittest/mytap)
+                    set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
 
 
 MACRO (MY_ADD_TEST name)
