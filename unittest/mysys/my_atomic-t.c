@@ -14,6 +14,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
 #include "thr_template.c"
+#include <my_atomic.h>
 
 /* at least gcc 3.4.5 and 3.4.6 (but not 3.2.3) on RHEL */
 #if __GNUC__ == 3 && __GNUC_MINOR__ == 4
