@@ -1154,8 +1154,8 @@ that may lead to an endless loop.",
    "Used to reserve file descriptors for use by this program.",
    (uchar**) &open_files_limit, (uchar**) &open_files_limit, 0, GET_ULONG,
    REQUIRED_ARG, MY_NFILE, 8, OS_FILE_LIMIT, 0, 1, 0},
-  {0, 0, 0, 0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0}
-};
+  {0, 0, 0, 0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0};
+
 
 
 /**
