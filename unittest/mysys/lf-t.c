@@ -19,7 +19,11 @@
   Unit tests for lock-free algorithms of mysys
 */
 
-#include "thr_template.c"
+#include <my_global.h>
+#include <my_sys.h>
+#include <base64.h>
+#include <tap.h>
+#include <string.h>
 
 #include <lf.h>
 
