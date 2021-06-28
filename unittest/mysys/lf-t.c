@@ -19,7 +19,11 @@
   Unit tests for lock-free algorithms of mysys
 */
 
-#include "thr_template.c"
+#include <my_global.h>
+#include <my_sys.h>
+#include <base64.h>
+#include <tap.h>
+#include <string.h>
 
 #include <lf.h>
 
@@ -47,9 +51,9 @@ pthread_handler_t test_lf_pinbox(void *arg)
   }
   lf_pinbox_put_pins(pins);
   pthread_mutex_lock(&mutex);
-  if (!--running_threads) pthread_cond_signal(&cond);
+  N--;
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
-  my_thread_end();
   return 0;
 }
 
@@ -87,11 +91,7 @@ pthread_handler_t test_lf_alloc(void *arg)
     lf_alloc_free(pins, node1);
     lf_alloc_free(pins, node2);
   }
-  lf_alloc_put_pins(pins);
-  pthread_mutex_lock(&mutex);
-  bad+= y;
-
-  if (--N == 0)
+  
   {
     diag("%d mallocs, %d pins in stack",
          lf_allocator.mallocs, lf_allocator.pinbox.pins_in_array);
@@ -99,9 +99,10 @@ pthread_handler_t test_lf_alloc(void *arg)
     bad|= lf_allocator.mallocs - lf_alloc_pool_count(&lf_allocator);
 #endif
   }
-  if (!--running_threads) pthread_cond_signal(&cond);
+  pthread_mutex_lock(&mutex);
+  N--;
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
-  my_thread_end();
   return 0;
 }
 
@@ -138,21 +139,17 @@ pthread_handler_t test_lf_hash(void *arg)
         sum-= z;
     }
   }
-  lf_hash_put_pins(pins);
-  pthread_mutex_lock(&mutex);
-  bad+= sum;
-  inserts+= ins;
-
-  if (--N == 0)
+  
   {
     diag("%d mallocs, %d pins in stack, %d hash size, %d inserts",
          lf_hash.alloc.mallocs, lf_hash.alloc.pinbox.pins_in_array,
          lf_hash.size, inserts);
     bad|= lf_hash.count;
   }
-  if (!--running_threads) pthread_cond_signal(&cond);
+  pthread_mutex_lock(&mutex);
+  N--;
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
-  my_thread_end();
   return 0;
 }
 
@@ -165,10 +162,7 @@ void do_tests()
   lf_hash_init(&lf_hash, sizeof(int), LF_HASH_UNIQUE, 0, sizeof(int), 0,
                &my_charset_bin);
 
-  bad= my_atomic_initialize();
-  ok(!bad, "my_atomic_initialize() returned %d", bad);
-
-  test_concurrently("lf_pinbox", test_lf_pinbox, N= THREADS, CYCLES);
+  
   test_concurrently("lf_alloc",  test_lf_alloc,  N= THREADS, CYCLES);
   test_concurrently("lf_hash",   test_lf_hash,   N= THREADS, CYCLES/10);
 
