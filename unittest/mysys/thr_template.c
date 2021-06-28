@@ -74,7 +74,7 @@ int main(int argc __attribute__((unused)), char **argv)
 #endif
 #define THREADS 30
 
-  diag("N CPUs: %d, atomic ops: %s", my_getncpus(), MY_ATOMIC_MODE);
+  
 
   do_tests();
 
