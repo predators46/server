@@ -25,6 +25,10 @@
 volatile uint32 b32;
 volatile int32  c32;
 my_atomic_rwlock_t rwl;
+pthread_attr_t thr_attr;
+pthread_mutex_t mutex;
+pthread_cond_t cond;
+int N;
 
 /* add and sub a random number in a loop. Must get 0 at the end */
 pthread_handler_t test_atomic_add(void *arg)
@@ -43,7 +47,8 @@ pthread_handler_t test_atomic_add(void *arg)
     my_atomic_rwlock_wrunlock(&rwl);
   }
   pthread_mutex_lock(&mutex);
-  if (!--running_threads) pthread_cond_signal(&cond);
+  N--;
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
   return 0;
 }
@@ -66,11 +71,8 @@ pthread_handler_t test_atomic_add64(void *arg)
     my_atomic_rwlock_wrunlock(&rwl);
   }
   pthread_mutex_lock(&mutex);
-  if (!--running_threads)
-  {
-    bad= (a64 != 0);
-    pthread_cond_signal(&cond);
-  }
+  N--;
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
   return 0;
 }
@@ -116,7 +118,8 @@ pthread_handler_t test_atomic_fas(void *arg)
   my_atomic_rwlock_wrunlock(&rwl);
 
   pthread_mutex_lock(&mutex);
-  if (!--running_threads) pthread_cond_signal(&cond);
+  N--;
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
   return 0;
 }
@@ -148,7 +151,8 @@ pthread_handler_t test_atomic_cas(void *arg)
     } while (!ok) ;
   }
   pthread_mutex_lock(&mutex);
-  if (!--running_threads) pthread_cond_signal(&cond);
+  N--;
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
   return 0;
 }
