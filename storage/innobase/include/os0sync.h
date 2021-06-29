@@ -36,6 +36,7 @@ Created 9/6/1995 Heikki Tuuri
 
 #include "univ.i"
 #include "ut0lst.h"
+#include "sync0types.h"
 
 #ifdef __WIN__
 
