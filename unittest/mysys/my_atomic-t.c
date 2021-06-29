@@ -43,7 +43,7 @@ pthread_handler_t test_atomic_add(void *arg)
     my_atomic_rwlock_wrunlock(&rwl);
   }
   pthread_mutex_lock(&mutex);
-  if (!--running_threads) pthread_cond_signal(&cond);
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
   return 0;
 }
@@ -66,11 +66,7 @@ pthread_handler_t test_atomic_add64(void *arg)
     my_atomic_rwlock_wrunlock(&rwl);
   }
   pthread_mutex_lock(&mutex);
-  if (!--running_threads)
-  {
-    bad= (a64 != 0);
-    pthread_cond_signal(&cond);
-  }
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
   return 0;
 }
@@ -116,7 +112,7 @@ pthread_handler_t test_atomic_fas(void *arg)
   my_atomic_rwlock_wrunlock(&rwl);
 
   pthread_mutex_lock(&mutex);
-  if (!--running_threads) pthread_cond_signal(&cond);
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
   return 0;
 }
@@ -148,7 +144,7 @@ pthread_handler_t test_atomic_cas(void *arg)
     } while (!ok) ;
   }
   pthread_mutex_lock(&mutex);
-  if (!--running_threads) pthread_cond_signal(&cond);
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
   return 0;
 }
