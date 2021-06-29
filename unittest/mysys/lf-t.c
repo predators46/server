@@ -50,9 +50,9 @@ pthread_handler_t test_lf_pinbox(void *arg)
   }
   lf_pinbox_put_pins(pins);
   pthread_mutex_lock(&mutex);
-  if (!--running_threads) pthread_cond_signal(&cond);
+  N--;
+  if (!N) pthread_cond_signal(&cond);
   pthread_mutex_unlock(&mutex);
-  my_thread_end();
   return 0;
 }
 
