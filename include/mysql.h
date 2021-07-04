@@ -221,6 +221,16 @@ enum mysql_protocol_type
   MYSQL_PROTOCOL_PIPE, MYSQL_PROTOCOL_MEMORY
 };
 
+/*
+There are three types of queries - the ones that have to go to
+the master, the ones that go to a slave, and the adminstrative
+type which must happen on the pivot connectioin
+*/
+enum mysql_rpl_type
+{
+MYSQL_RPL_MASTER, MYSQL_RPL_SLAVE, MYSQL_RPL_ADMIN
+};
+
 typedef struct character_set
 {
   unsigned int      number;     /* character set number              */
