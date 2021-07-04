@@ -44,7 +44,9 @@ extern "C" {
 #endif
 
 #ifndef _global_h				/* If not standard header */
+#ifndef MYSQL_ABI_CHECK
 #include <sys/types.h>
+#endif
 #ifdef __LCC__
 #include <winsock2.h>				/* For windows */
 #endif
@@ -459,16 +461,6 @@ unsigned long STDCALL mysql_real_escape_string(MYSQL *mysql,
 					       char *to,const char *from,
 					       unsigned long length);
 void		STDCALL mysql_debug(const char *debug);
-char *		STDCALL mysql_odbc_escape_string(MYSQL *mysql,
-						 char *to,
-						 unsigned long to_length,
-						 const char *from,
-						 unsigned long from_length,
-						 void *param,
-						 char *
-						 (*extend_buffer)
-						 (void *, char *to,
-						  unsigned long *length));
 void 		STDCALL myodbc_remove_escape(MYSQL *mysql,char *name);
 unsigned int	STDCALL mysql_thread_safe(void);
 my_bool		STDCALL mysql_embedded(void);
