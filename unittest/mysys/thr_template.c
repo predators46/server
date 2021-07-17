@@ -86,7 +86,6 @@ int main(int argc __attribute__((unused)), char **argv)
   pthread_mutex_destroy(&mutex);
   pthread_cond_destroy(&cond);
   pthread_attr_destroy(&thr_attr);
-  my_end(0);
   return exit_status();
 }
 
