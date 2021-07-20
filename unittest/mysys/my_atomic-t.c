@@ -27,7 +27,7 @@ volatile int32  c32;
 my_atomic_rwlock_t rwl;
 
 /* add and sub a random number in a loop. Must get 0 at the end */
-pthread_handler_t test_atomic_add(void *arg)
+pthread_handler_t test_atomic_add_handler(void *arg)
 {
   int    m= (*(int *)arg)/2;
   GCC_BUG_WORKAROUND int32 x;
@@ -50,7 +50,7 @@ pthread_handler_t test_atomic_add(void *arg)
 
 volatile int64 a64;
 /* add and sub a random number in a loop. Must get 0 at the end */
-pthread_handler_t test_atomic_add64(void *arg)
+pthread_handler_t test_atomic_add64_handler(void *arg)
 {
   int    m= (*(int *)arg)/2;
   GCC_BUG_WORKAROUND int64 x;
@@ -84,7 +84,7 @@ pthread_handler_t test_atomic_add64(void *arg)
   5. subtract result from bad
   must get 0 in bad at the end
 */
-pthread_handler_t test_atomic_fas(void *arg)
+pthread_handler_t test_atomic_fas_handler(void *arg)
 {
   int    m= *(int *)arg;
   int32  x;
@@ -126,7 +126,7 @@ pthread_handler_t test_atomic_fas(void *arg)
   my_atomic_cas32 - notice that the slowdown is proportional to the
   number of CPUs
 */
-pthread_handler_t test_atomic_cas(void *arg)
+pthread_handler_t test_atomic_cas_handler(void *arg)
 {
   int    m= (*(int *)arg)/2, ok= 0;
   GCC_BUG_WORKAROUND int32 x, y;
@@ -164,11 +164,11 @@ void do_tests()
   my_atomic_rwlock_init(&rwl);
 
   b32= c32= 0;
-  test_concurrently("my_atomic_add32", test_atomic_add, THREADS, CYCLES);
+  test_concurrently("my_atomic_add32", test_atomic_add_handler, THREADS, CYCLES);
   b32= c32= 0;
-  test_concurrently("my_atomic_fas32", test_atomic_fas, THREADS, CYCLES);
+  test_concurrently("my_atomic_fas32", test_atomic_fas_handler, THREADS, CYCLES);
   b32= c32= 0;
-  test_concurrently("my_atomic_cas32", test_atomic_cas, THREADS, CYCLES);
+  test_concurrently("my_atomic_cas32", test_atomic_cas_handler, THREADS, CYCLES);
 
   {
     int64 b=0x1000200030004000LL;
@@ -177,7 +177,7 @@ void do_tests()
     ok(a64==b, "add64");
   }
   a64=0;
-  test_concurrently("my_atomic_add64", test_atomic_add64, THREADS, CYCLES);
+  test_concurrently("my_atomic_add64", test_atomic_add64_handler, THREADS, CYCLES);
 
   my_atomic_rwlock_destroy(&rwl);
 }
