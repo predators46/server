@@ -37,7 +37,6 @@
 #include "sp_head.h"
 #include "sp_rcontext.h"
 #include "sp.h"
-#include "set_var.h"
 
 #ifdef NO_EMBEDDED_ACCESS_CHECKS
 #define sp_restore_security_context(A,B) while (0) {}
