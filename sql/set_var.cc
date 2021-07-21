@@ -20,8 +20,15 @@
 /* variable declarations are in sys_vars.cc now !!! */
 
 #include "mysql_priv.h"
-#include "sys_vars_shared.h"
-#include "transaction.h"
+#include <mysql.h>
+#include "slave.h"
+#include "rpl_mi.h"
+#include <my_getopt.h>
+#include <thr_alarm.h>
+#include <myisam.h>
+#include <my_dir.h>
+
+#include "events.h"
 
 static HASH system_variable_hash;
 static PolyLock_mutex PLock_global_system_variables(&LOCK_global_system_variables);
