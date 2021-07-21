@@ -4998,7 +4998,7 @@ void Item_func_get_system_var::fix_length_and_dec()
     if (var_type != OPT_DEFAULT)
     {
       my_error(ER_INCORRECT_GLOBAL_LOCAL_VAR, MYF(0),
-               var->name.str, var_type == OPT_GLOBAL ? "SESSION" : "GLOBAL");
+               var->name, var_type == OPT_GLOBAL ? "SESSION" : "GLOBAL");
       return;
     }
     /* As there was no local variable, return the global value */
@@ -5063,7 +5063,7 @@ void Item_func_get_system_var::fix_length_and_dec()
       fix_char_length(DBL_DIG + 6);
       break;
     default:
-      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name.str);
+      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name);
       break;
   }
 }
@@ -5093,7 +5093,7 @@ enum Item_result Item_func_get_system_var::result_type() const
     case SHOW_DOUBLE:
       return REAL_RESULT;
     default:
-      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name.str);
+      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name);
       return STRING_RESULT;                   // keep the compiler happy
   }
 }
@@ -5117,7 +5117,7 @@ enum_field_types Item_func_get_system_var::field_type() const
     case SHOW_DOUBLE:
       return MYSQL_TYPE_DOUBLE;
     default:
-      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name.str);
+      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name);
       return MYSQL_TYPE_VARCHAR;              // keep the compiler happy
   }
 }
@@ -5213,7 +5213,7 @@ longlong Item_func_get_system_var::val_int()
       }
 
     default:            
-      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name.str); 
+      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name); 
       return 0;                               // keep the compiler happy
   }
 }
@@ -5292,7 +5292,7 @@ String* Item_func_get_system_var::val_str(String* str)
       break;
 
     default:
-      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name.str);
+      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name);
       str= NULL;
       break;
   }
@@ -5383,7 +5383,7 @@ double Item_func_get_system_var::val_real()
         cached_null_value= null_value;
         return cached_dval;
     default:
-      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name.str);
+      my_error(ER_VAR_CANT_BE_READ, MYF(0), var->name);
       return 0;
   }
 }
