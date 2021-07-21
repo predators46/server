@@ -24,7 +24,6 @@
 #pragma interface                       /* gcc class implementation */
 #endif
 
-#include <my_getopt.h>
 
 class sys_var;
 class set_var;
@@ -53,7 +52,6 @@ class sys_var
 {
 public:
   sys_var *next;
-  LEX_CSTRING name;
   enum flag_enum { GLOBAL, SESSION, ONLY_SESSION, SCOPE_MASK=1023,
                    READONLY=1024, ALLOCATED=2048 };
   static const int PARSE_EARLY= 1;
