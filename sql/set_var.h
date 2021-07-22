@@ -30,6 +30,10 @@ class sys_var;
 class set_var;
 class sys_var_pluginvar;
 class PolyLock;
+class Item_func_set_user_var;
+
+// This include needs to be here since item.h requires enum_var_type :-P
+#include "item.h"
 
 extern TYPELIB bool_typelib;
 
