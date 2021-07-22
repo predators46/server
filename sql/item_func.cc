@@ -25,8 +25,21 @@
 #pragma implementation				// gcc: Class implementation
 #endif
 
+#include "my_global.h"                          /* NO_EMBEDDED_ACCESS_CHECKS */
 #include "mysql_priv.h"
+/*
+  It is necessary to include set_var.h instead of item.h because there
+  are dependencies on include order for set_var.h and item.h. This
+  will be resolved later.
+*/
+#include "sql_class.h"                          // set_var.h: THD
+#include "set_var.h"
 #include "slave.h"				// for wait_for_master_pos
+#include "sql_show.h"                           // append_identifier
+#include "strfunc.h"                            // find_type
+#include "sql_parse.h"                          // is_update_query
+#include "sql_acl.h"                            // EXECUTE_ACL
+#include "mysqld.h"                             // LOCK_uuid_generator
 #include "rpl_mi.h"
 #include <m_ctype.h>
 #include <hash.h>
@@ -38,6 +51,7 @@
 #include "sp_rcontext.h"
 #include "sp.h"
 #include "set_var.h"
+#include "debug_sync.h"
 
 #ifdef NO_EMBEDDED_ACCESS_CHECKS
 #define sp_restore_security_context(A,B) while (0) {}
