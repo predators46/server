@@ -4998,7 +4998,7 @@ void Item_func_get_system_var::fix_length_and_dec()
     if (var_type != OPT_DEFAULT)
     {
       my_error(ER_INCORRECT_GLOBAL_LOCAL_VAR, MYF(0),
-               var->name.str, var_type == OPT_GLOBAL ? "SESSION" : "GLOBAL");
+               var->var_type == OPT_GLOBAL ? "SESSION" : "GLOBAL");
       return;
     }
     /* As there was no local variable, return the global value */
