@@ -25,7 +25,9 @@
 #pragma implementation				// gcc: Class implementation
 #endif
 
+#include "my_global.h"
 #include "mysql_priv.h"
+#include "sql_class.h"
 #include "slave.h"				// for wait_for_master_pos
 #include "rpl_mi.h"
 #include <m_ctype.h>
